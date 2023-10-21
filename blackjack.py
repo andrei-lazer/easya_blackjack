@@ -1,48 +1,60 @@
 
 import random
 
-class Person():
+class Person(): # player info class
     name = ""
     hand_cards = []
      
-def createCard():
+def createCard(): # function to create an intial deck
     suits = ['S', 'H', 'C', 'D']
     cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
-    Stack=[]
     deck=[(x,y)for x in cards for y in suits]
-    # for x in suits:
-    #     for y in cards:
-    #         Stack.append(x,y)
     deck=deck*6
-    for i in deck:
-        print(i)
     return deck
 
 
-def Users():
-   
-    Num_Users=int(input("Enter number of people: "))
+def Users(): # number of players 
+    while True:
+        try:
+            Num_Users=int(input("Enter number of people: "))
+        except ValueError:
+            print("Provide an integer value...")
+            continue
+        else:
+            break
+            
+
 
     Users=[]
+    Users.append(Person())
+    Users[0].name="Dealer"
     for i in range(Num_Users):
-        
-        Names = input("Enter Your Name: ")
-        Person1 = Person()
-        Person1.name = Names
-        Users.append(Names)
-    print(Person1.name)
+        Users.append(Person())
+        Name = input("Enter Your Name: ")
+        Users[i+1].name = Name
+    
     return Users
 
 def distributeCard(deck,users):
     random.shuffle(deck)
-    for i in range(len(users)):
-        player = [deck.pop(),deck.pop() ]
-    dealer = [deck.pop(), deck.pop()]
-    print(player)
+    for i in users:
+        c1=deck.pop()
+        c2=deck.pop()
+        i.hand_cards=[c1,c2]
+    return users,deck
 
-# # Stack= 
-# Users()
-deck = createCard()
-users = Users()
-distributeCard(deck,users)
+
+def printall(deck,users):
+    for i in users:
+        print(i.hand_cards)
+        print(i.name)
+
+def start(deck,users):
+    
+    
+
+deck = createCard() #intial deck of 6
+users = Users() #number of players playing
+users,deck =distributeCard(deck,users) # distribution of cards
+printall(deck,users)
 
