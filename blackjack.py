@@ -1,4 +1,3 @@
-
 import random
 
 class Person(): # player info class
@@ -24,12 +23,11 @@ def Users(): # number of players
             continue
         else:
             break
-            
-
-
+    #The dealer's hand
     Users=[]
     Users.append(Person())
     Users[0].name="Dealer"
+    #The User's Hand
     for i in range(Num_Users):
         Users.append(Person())
         Name = input("Enter Your Name: ")
@@ -38,7 +36,7 @@ def Users(): # number of players
     return Users
 
 
-def distributeCard(deck,users):
+def distributeCard(deck,users): #Distributing the intial cards 
     random.shuffle(deck)
     for i in users:
         c1=deck.pop()
@@ -49,22 +47,21 @@ def distributeCard(deck,users):
     return users,deck
 
 
-def printall(deck,users):
+def printall(deck,users): #prints all the values
     for i in users:
         print (i.name)
         print (i.hand_cards)
         print (i.value)
         
-def drawCard(users,pos,deck):
+def drawCard(users,pos,deck): #Draws a Card
     c=deck.pop()
     users[pos].value=users[pos].value+getval(c[0])
     users[pos].hand_cards.append(c)
     print (users[pos].hand_cards)
     print (users[pos].value)
-    
     return deck,users
 
-def start(deck,users):
+def start(deck,users): #Game intialised 
     for i in range (1,len(users)):
         play=input("Enter 1 to hit or 0 to stop")
         if play=="1":
@@ -73,7 +70,8 @@ def start(deck,users):
         elif play=="0":
             print("you stopped")
     return deck,users
-def dealer(users,deck):
+
+def dealer(users,deck): #The dealer plays
     while (users[0].value != 21): 
         if users[0].value<11:
             drawCard(users,0,deck)
@@ -85,7 +83,7 @@ def dealer(users,deck):
                 print("stop")
                 break
         
-def getval(card):
+def getval(card): #Adds the value to the card
     if card in ["Q","J","K"]:
         return 10
     elif card == "A":
@@ -93,7 +91,7 @@ def getval(card):
     else:
         return int(card)
 
-
+#The main Method 
 deck = createCard() #intial deck of 6
 users = Users() #number of players playing
 users,deck =distributeCard(deck,users) # distribution of cards
