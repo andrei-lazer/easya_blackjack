@@ -1,3 +1,4 @@
+
 import random
 
 class Person(): # player info class
@@ -5,6 +6,7 @@ class Person(): # player info class
     hand_cards = []
     value=0
     money=0
+    inGame=True
      
 def createCard(): # function to create an intial deck
     suits = ['S', 'H', 'C', 'D']
@@ -23,11 +25,12 @@ def Users(): # number of players
             continue
         else:
             break
-    #The dealer's hand
+            
+
+
     Users=[]
     Users.append(Person())
     Users[0].name="Dealer"
-    #The User's Hand
     for i in range(Num_Users):
         Users.append(Person())
         Name = input("Enter Your Name: ")
@@ -36,7 +39,7 @@ def Users(): # number of players
     return Users
 
 
-def distributeCard(deck,users): #Distributing the intial cards 
+def distributeCard(deck,users):
     random.shuffle(deck)
     for i in users:
         c1=deck.pop()
@@ -47,43 +50,64 @@ def distributeCard(deck,users): #Distributing the intial cards
     return users,deck
 
 
-def printall(deck,users): #prints all the values
+def printall(deck,users):
     for i in users:
         print (i.name)
         print (i.hand_cards)
         print (i.value)
         
-def drawCard(users,pos,deck): #Draws a Card
+def drawCard(users,pos,deck):
     c=deck.pop()
     users[pos].value=users[pos].value+getval(c[0])
     users[pos].hand_cards.append(c)
     print (users[pos].hand_cards)
     print (users[pos].value)
+    
     return deck,users
 
-def start(deck,users): #Game intialised 
-    for i in range (1,len(users)):
-        play=input("Enter 1 to hit or 0 to stop")
-        if play=="1":
-            print ("you hit")
-            deck,users=drawCard(users,i,deck)
-        elif play=="0":
-            print("you stopped")
-    return deck,users
 
-def dealer(users,deck): #The dealer plays
-    while (users[0].value != 21): 
+
+def dealer(users,deck,OutofGameArray,WinningArray):
+    loop = ingame(users[0].value)
+    while (loop): 
+        
         if users[0].value<11:
             drawCard(users,0,deck)
+            print("-dealer draws card")
+
+        elif users[0].value == 21:
+            print("-dealer got 21")
+            loop = False
+            out = users.pop(0)
+            WinningArray.append(out.name)
+        
         elif users[0].value>=11:
             draw_var = random.randint(0,1)
-            if draw_var == 1:
+            if draw_var == 1 and users[0].value<21:
                 drawCard(users,0,deck)
+                print("-dealer draws card")
+            elif users[0].value == 21:
+                print("-dealer got 21")
+                loop = False
+                out = users.pop(0)
+                WinningArray.append(out.name)
             else:
-                print("stop")
-                break
+                print("-dealer stop")
+                loop = False
         
-def getval(card): #Adds the value to the card
+        # elif users[0].value> 21:
+        #     print("-dealer stop")
+        #     loop = False
+        #     out = users.pop(0)
+        #     OutofGameArray.append(out)
+
+
+
+                
+    return deck,users
+
+
+def getval(card):
     if card in ["Q","J","K"]:
         return 10
     elif card == "A":
@@ -91,13 +115,84 @@ def getval(card): #Adds the value to the card
     else:
         return int(card)
 
-#The main Method 
+def ingame(val):
+    
+    if val>21:
+        print("-Player out")
+        return False
+    else:
+        return True
+
+def gameover(WinningArray):
+    print ("- The Game over")
+    print(WinningArray, "These guys Win the Game")
+    quit()
+    
+
+
+def start(deck,users):
+
+    OutofGameArray = []
+    IngameCount=len(users)
+    WinningArray = []
+    deck,users=dealer(users,deck,OutofGameArray,WinningArray)
+    loop=True
+    
+   
+    while loop:
+        for i in range (1,IngameCount):
+            print(" ")
+            print("dealer")
+            print(users[0].hand_cards)
+            
+            hit=True
+            while (hit):
+                print (users[i].name)
+                if (users[i].value) == 21:
+                    IngameCount=IngameCount-1
+                    if (IngameCount==1):
+                            gameover(WinningArray)
+                            loop=False
+                    out = users.pop(i)
+                    WinningArray.append(out.name)
+                    hit = False
+
+                play=input("Enter 1 to hit or 0 to stop")
+                if play=="1":
+                    print ("you hit")
+                    deck,users=drawCard(users,i,deck)
+                    if(ingame(users[i].value)):
+                        users[i].inGame=True
+                    else:
+                        users[i].inGame=False
+                        IngameCount=IngameCount-1
+                        out = users.pop(i)
+                        OutofGameArray.append(out.name)
+                        if (IngameCount==1):
+                            gameover(WinningArray)
+                            loop=False
+                        
+                elif play=="0":
+                    print("you stopped")
+                    users[i].inGame=False
+                    IngameCount=IngameCount-1
+                    if (IngameCount==1):
+                            gameover(WinningArray)
+                            loop=False
+                    hit=False
+    
+    return deck,users
+
+        
+
 deck = createCard() #intial deck of 6
 users = Users() #number of players playing
 users,deck =distributeCard(deck,users) # distribution of cards
 printall(deck,users)
+
 deck,users=start(deck,users)
-deck,users=dealer(users,deck)
+printall(deck,users)
+
 
 
 
