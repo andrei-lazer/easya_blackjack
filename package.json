@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "blockstack": "^21.1.1"
+  }
+}
